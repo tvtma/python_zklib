@@ -74,7 +74,8 @@ def zkgetattendance(self):
                 attendancedata = attendancedata[40:]
             
         return attendance
-    except:
+    except Exception as e:
+        print e
         return False
     
     
