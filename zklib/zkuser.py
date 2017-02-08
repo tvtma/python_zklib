@@ -19,7 +19,7 @@ def getSizeUser(self):
 def zksetuser(self, uid, userid, name, password, role):
     """Start a connection with the time clock"""
     command = CMD_SET_USER
-    command_string = pack('sxs8s28ss7sx8s16s', chr( uid ), chr(role), password, name, chr(1), '', userid, '' )
+    command_string = pack('sxs8s28ss7sx8s16s', chr(uid), chr(role), password, name, chr(1), '', userid, '')
     chksum = 0
     session_id = self.session_id
     reply_id = unpack('HHHH', self.data_recv[:8])[3]
@@ -27,7 +27,7 @@ def zksetuser(self, uid, userid, name, password, role):
     buf = self.createHeader(command, chksum, session_id,
         reply_id, command_string)
     self.zkclient.sendto(buf, self.address)
-    #print buf.encode("hex")
+    # print buf.encode("hex")
     try:
         self.data_recv, addr = self.zkclient.recvfrom(1024)
         self.session_id = unpack('HHHH', self.data_recv[:8])[2]
@@ -47,7 +47,7 @@ def zkgetuser(self):
     buf = self.createHeader(command, chksum, session_id,
         reply_id, command_string)
     self.zkclient.sendto(buf, self.address)
-    #print buf.encode("hex")
+    # print buf.encode("hex")
     try:
         self.data_recv, addr = self.zkclient.recvfrom(1024)
         
@@ -70,20 +70,20 @@ def zkgetuser(self):
                 if x > 0:
                     self.userdata[x] = self.userdata[x][8:]
             
-            userdata = ''.join( self.userdata )
+            userdata = ''.join(self.userdata)
             
             userdata = userdata[11:]
-            
+            i = 0 # this is to be used as key for users dict since uid not unique in some devices
             while len(userdata) > 72:
                 
-                uid, role, password, name, userid = unpack( '2s2s8s28sx31s', userdata.ljust(72)[:72] )
+                uid, role, password, name, userid = unpack('2s2s8s28sx31s', userdata.ljust(72)[:72])
                 
-                uid = int( uid.encode("hex"), 16)
+                uid = int(uid.encode("hex"), 16)
                 # Clean up some messy characters from the user name
                 password = password.split('\x00', 1)[0]
                 password = unicode(password.strip('\x00|\x01\x10x'), errors='ignore')
                 
-                #uid = uid.split('\x00', 1)[0]
+                # uid = uid.split('\x00', 1)[0]
                 userid = unicode(userid.strip('\x00|\x01\x10x'), errors='ignore')
                 
                 name = name.split('\x00', 1)[0]
@@ -91,9 +91,10 @@ def zkgetuser(self):
                 if name.strip() == "":
                     name = uid
                 
-                users[uid] = (userid, name, int( role.encode("hex"), 16 ), password)
+                users[i] = (uid, userid, name, int(role.encode("hex"), 16), password)
+                i += 1
                 
-                #print("%d, %s, %s, %s, %s" % (uid, userid, name, int( role.encode("hex"), 16 ), password))
+                # print("%d, %s, %s, %s, %s" % (uid, userid, name, int( role.encode("hex"), 16 ), password))
                 userdata = userdata[72:]
                 
         return users
@@ -112,7 +113,7 @@ def zkclearuser(self):
     buf = self.createHeader(command, chksum, session_id,
         reply_id, command_string)
     self.zkclient.sendto(buf, self.address)
-    #print buf.encode("hex")
+    # print buf.encode("hex")
     try:
         self.data_recv, addr = self.zkclient.recvfrom(1024)
         self.session_id = unpack('HHHH', self.data_recv[:8])[2]
@@ -132,7 +133,7 @@ def zkclearadmin(self):
     buf = self.createHeader(command, chksum, session_id,
         reply_id, command_string)
     self.zkclient.sendto(buf, self.address)
-    #print buf.encode("hex")
+    # print buf.encode("hex")
     try:
         self.data_recv, addr = self.zkclient.recvfrom(1024)
         self.session_id = unpack('HHHH', self.data_recv[:8])[2]
