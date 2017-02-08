@@ -91,7 +91,7 @@ def zkgetuser(self):
                 if name.strip() == "":
                     name = uid
                 
-                users[i] = (uid, userid, name, int(role.encode("hex"), 16), password)
+                users[i] = (userid, name, int(role.encode("hex"), 16), password, uid)
                 i += 1
                 
                 # print("%d, %s, %s, %s, %s" % (uid, userid, name, int( role.encode("hex"), 16 ), password))
